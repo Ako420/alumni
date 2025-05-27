@@ -27,9 +27,11 @@ public class User {
     @Column(nullable = false)
     private Role role;  // enum: ADMIN or ALUMNI
 
+    @Builder.Default
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Builder.Default
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 }

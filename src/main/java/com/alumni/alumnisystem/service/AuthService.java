@@ -23,25 +23,29 @@ public class AuthService {
             throw new IllegalArgumentException("Email already exists");
         }
 
-        // Create user account
-        User user = User.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.alumni) // default role
-                .build();
-        userRepository.save(user);
+        
+    Role selectedRole = request.getRole() != null ? request.getRole() : Role.alumni;
 
-        // Create basic alumni profile
+    User user = User.builder()
+            .email(request.getEmail())
+            .password(passwordEncoder.encode(request.getPassword()))
+            .role(selectedRole)
+            .build();
+    userRepository.save(user);
+
+    // Only create alumni profile for alumni users
+    if (selectedRole == Role.alumni) {
         AlumniProfile profile = AlumniProfile.builder()
                 .user(user)
                 .fullName(request.getName())
-                .graduationYear(0) // can be updated later
-                .course("Not set") // placeholder
+                .graduationYear(0)
+                .course("Not set")
                 .build();
         alumniProfileRepository.save(profile);
+    }
 
-        // Generate JWT token
-        return new AuthResponse(jwtUtil.generateToken(user.getEmail()));
+    return new AuthResponse(jwtUtil.generateToken(user.getEmail()));
+
     }
 
     public AuthResponse login(LoginRequest request) {
