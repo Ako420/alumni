@@ -1,7 +1,8 @@
 package com.alumni.alumnisystem.service;
 
 import com.alumni.alumnisystem.dto.*;
-import com.alumni.alumnisystem.model.User;
+import com.alumni.alumnisystem.model.*;
+import com.alumni.alumnisystem.repository.AlumniProfileRepository;
 import com.alumni.alumnisystem.repository.UserRepository;
 import com.alumni.alumnisystem.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final AlumniProfileRepository alumniProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -21,14 +23,24 @@ public class AuthService {
             throw new IllegalArgumentException("Email already exists");
         }
 
+        // Create user account
         User user = User.builder()
-                .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role("USER")
+                .role(Role.alumni) // default role
                 .build();
-
         userRepository.save(user);
+
+        // Create basic alumni profile
+        AlumniProfile profile = AlumniProfile.builder()
+                .user(user)
+                .fullName(request.getName())
+                .graduationYear(0) // can be updated later
+                .course("Not set") // placeholder
+                .build();
+        alumniProfileRepository.save(profile);
+
+        // Generate JWT token
         return new AuthResponse(jwtUtil.generateToken(user.getEmail()));
     }
 
