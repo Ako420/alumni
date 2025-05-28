@@ -1,6 +1,7 @@
 package com.alumni.alumnisystem.controller;
 
 import com.alumni.alumnisystem.dto.*;
+import com.alumni.alumnisystem.model.EventStatus;
 import com.alumni.alumnisystem.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,6 +23,14 @@ public class EventController {
         eventService.createEvent(userDetails, request);
         return "Event created successfully";
     }
+    
+@PatchMapping("/{id}/status")
+public String updateEventStatus(@PathVariable Long id,
+                                @RequestParam EventStatus status,
+                                @AuthenticationPrincipal UserDetails userDetails) {
+    eventService.updateEventStatus(id, status, userDetails);
+    return "Event status updated to " + status.name();
+}
 
     @GetMapping
     public List<EventResponse> getApprovedEvents() {

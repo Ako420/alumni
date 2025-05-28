@@ -72,4 +72,19 @@ public class JobService {
                 .applicationDeadline(job.getApplicationDeadline())
                 .build();
     }
+    
+    public void deleteJob(Long jobId, UserDetails userDetails) {
+    User admin = userRepo.findByEmail(userDetails.getUsername())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    if (admin.getRole() != Role.admin) {
+        throw new RuntimeException("Only admins can delete jobs.");
+    }
+
+    JobOpportunity job = jobRepo.findById(jobId)
+            .orElseThrow(() -> new RuntimeException("Job not found"));
+
+    jobRepo.delete(job);
+}
+
 }

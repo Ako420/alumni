@@ -71,4 +71,19 @@ public class EventService {
                 .status(event.getStatus().name())
                 .build();
     }
+    public void updateEventStatus(Long eventId, EventStatus status, UserDetails userDetails) {
+    User admin = userRepo.findByEmail(userDetails.getUsername())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    if (admin.getRole() != Role.admin) {
+        throw new RuntimeException("Only admins can modify event status.");
+    }
+
+    Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new RuntimeException("Event not found"));
+
+    event.setStatus(status);
+    eventRepo.save(event);
+}
+
 }

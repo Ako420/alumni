@@ -44,4 +44,11 @@ public class JobController {
     public List<JobResponse> getAllJobs() {
         return jobService.getAllJobs();
     }
+    @DeleteMapping("/{id}")
+public String deleteJob(@PathVariable Long id,
+                        @AuthenticationPrincipal UserDetails userDetails) {
+    jobService.deleteJob(id, userDetails);
+    return "Job deleted successfully";
+}
+
 }
