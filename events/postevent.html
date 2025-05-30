@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Event</title>
+    <link rel="stylesheet" href="post.css">
+</head>
+<body>
+    <h1 id="main">Post a New Alumni Event</h1><br>
+    <hr><br>
+    <section>
+        <main> 
+            <form action="" id="postForm">
+                <div class="left">
+                    <div class="basics"> 
+                        <h2>Event Basics</h2>
+                        <label for="event-title">Event Title</label>
+                        <input type="text" id="event-title" name="event-title" required>
+
+                        <label for="date-time">Date & Time</label>
+                        <input type="datetime-local" id="date-time" name="date-time" required>
+
+                        <label for="location">Location</label>
+                        <input type="text" id="location" name="location" required>
+
+                        <label for="deadline">Registration Deadline</label>
+                        <input type="date" id="deadline" name="deadline" required>
+                    </div>
+                </div>
+
+                <div id="right">
+                    <div class="description">
+                        <h2>Event Description</h2>
+                        <label for="summary">Summary</label>
+                        <textarea id="summary" name="summary" required placeholder="2-3 sentences highlighting purpose, speakers or highlights"></textarea>
+                    </div>
+
+                    <div class="logistics">
+                        <h2>Logistics</h2>
+                        <label for="attendees">Max Attendees</label>
+                        <input type="number" id="attendees" name="attendees" required>
+
+                        <label for="cost">Cost</label> 
+                        <select id="cost" name="cost">
+                            <option value="free">Free</option>
+                            <option value="business">Business</option>
+                        </select>
+                    </div>
+
+                    <div class="promotion">
+                        <h2>Promotion & Registration</h2>
+                        <div class="cont">
+                        <div>
+                        <input type="checkbox" id="email" name="promotion-email">
+                        <label for="email">Blast Email to alumni</label></div>
+                        <div>
+                        <input type="checkbox" id="social" name="promotion-social">
+                        <label for="social">Social Media Announcement</label></div>
+                        <div>
+                        <input type="checkbox" id="website" name="promotion-website">
+                        <label for="website">Website banner</label></div>
+                    </div></div>
+                </div>
+
+                <div class="activities">
+                    <h2>Event Activities</h2>
+                    <p>(check all that apply)</p>
+                    <div class="conter">
+                    <div>
+                    <input type="checkbox" id="network" name="activities" value="Networking">
+                    <label for="network">Networking Session</label></div>
+                    <div>
+                    <input type="checkbox" id="panel" name="activities" value="Panel">
+                    <label for="panel">Panel Discussion</label></div>
+                    <div>
+                    <input type="checkbox" id="workshop" name="activities" value="Workshop">
+                    <label for="workshop">Workshops</label></div>
+                    <div>
+                    <input type="checkbox" id="award" name="activities" value="Award">
+                    <label for="award">Award Ceremony</label></div>
+                </div></div>
+
+                <div class="butt">
+                    <button type="submit">Publish Event</button>
+                </div>
+            </form>
+        </main>
+    </section>
+
+    <script>
+        document.getElementById('postForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const eventObj = Object.fromEntries(formData.entries());
+
+            const response = await fetch('/api/events', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(eventObj)
+            });
+
+            const msg = await response.text();
+            alert(msg);
+            e.target.reset();
+        });
+    </script>
+</body>
+</html>
