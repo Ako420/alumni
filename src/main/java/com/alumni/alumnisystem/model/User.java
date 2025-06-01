@@ -26,6 +26,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;  // enum: ADMIN or ALUMNI
+    
+    @Builder.Default
+    @Column(name = "enabled")
+    private boolean enabled = true;
+
 
     @Builder.Default
     @Column(name = "created_at")

@@ -1,15 +1,14 @@
 package com.alumni.alumnisystem.service;
 
-import com.alumni.alumnisystem.dto.*;
+import com.alumni.alumnisystem.dto.EventRequest;
+import com.alumni.alumnisystem.dto.EventResponse;
 import com.alumni.alumnisystem.model.*;
-import com.alumni.alumnisystem.repository.EventRepository;
-import com.alumni.alumnisystem.repository.UserRepository;
+import com.alumni.alumnisystem.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,13 +16,12 @@ public class EventService {
 
     private final EventRepository eventRepo;
     private final UserRepository userRepo;
+    private final NotificationService notificationService;
 
-    public void createEvent(UserDetails userDetails, EventRequest request) {
-        User user = userRepo.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (user.getRole() != Role.admin) {
-            throw new RuntimeException("Only admins can create events");
+    public void createEvent(EventRequest request, UserDetails userDetails) {
+        User admin = getUser(userDetails);
+        if (admin.getRole() != Role.admin) {
+            throw new RuntimeException("Only admins can create events.");
         }
 
         Event event = Event.builder()
@@ -33,33 +31,61 @@ public class EventService {
                 .eventTime(request.getEventTime())
                 .location(request.getLocation())
                 .maxAttendees(request.getMaxAttendees())
-                .status(EventStatus.approved) // auto-approved for now
-                .createdBy(user)
+                .status(EventStatus.approved)
+                .createdBy(admin)
                 .build();
+
+        eventRepo.save(event);
+
+        List<User> alumni = userRepo.findAll().stream()
+                .filter(u -> u.getRole() == Role.alumni && u.isEnabled())
+                .toList();
+
+        alumni.forEach(user ->
+                notificationService.notifyUser(user, "New Event: " + event.getTitle(), true)
+        );
+    }
+
+    public void updateEvent(Long id, EventRequest request, UserDetails userDetails) {
+        User admin = getUser(userDetails);
+        if (admin.getRole() != Role.admin) {
+            throw new RuntimeException("Only admins can update events.");
+        }
+
+        Event event = getEvent(id);
+        event.setTitle(request.getTitle());
+        event.setDescription(request.getDescription());
+        event.setEventDate(request.getEventDate());
+        event.setEventTime(request.getEventTime());
+        event.setLocation(request.getLocation());
+        event.setMaxAttendees(request.getMaxAttendees());
 
         eventRepo.save(event);
     }
 
-    public List<EventResponse> getApprovedEvents() {
+    public List<EventResponse> getAllApprovedEvents() {
         return eventRepo.findByStatus(EventStatus.approved)
-                .stream()
-                .map(event -> EventResponse.builder()
-                        .id(event.getId())
-                        .title(event.getTitle())
-                        .description(event.getDescription())
-                        .eventDate(event.getEventDate())
-                        .eventTime(event.getEventTime())
-                        .location(event.getLocation())
-                        .maxAttendees(event.getMaxAttendees())
-                        .status(event.getStatus().name())
-                        .build())
-                .collect(Collectors.toList());
+                .stream().map(this::toResponse).toList();
     }
 
     public EventResponse getEventById(Long id) {
-        Event event = eventRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+        return toResponse(getEvent(id));
+    }
 
+    public void deleteEvent(Long id, UserDetails userDetails) {
+        User admin = getUser(userDetails);
+        if (admin.getRole() != Role.admin) {
+            throw new RuntimeException("Only admins can delete events.");
+        }
+        eventRepo.deleteById(id);
+    }
+
+    private Event getEvent(Long id) {
+        return eventRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+    }
+
+    private EventResponse toResponse(Event event) {
         return EventResponse.builder()
                 .id(event.getId())
                 .title(event.getTitle())
@@ -71,19 +97,9 @@ public class EventService {
                 .status(event.getStatus().name())
                 .build();
     }
-    public void updateEventStatus(Long eventId, EventStatus status, UserDetails userDetails) {
-    User admin = userRepo.findByEmail(userDetails.getUsername())
-            .orElseThrow(() -> new RuntimeException("User not found"));
 
-    if (admin.getRole() != Role.admin) {
-        throw new RuntimeException("Only admins can modify event status.");
+    private User getUser(UserDetails userDetails) {
+        return userRepo.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
-
-    Event event = eventRepo.findById(eventId)
-            .orElseThrow(() -> new RuntimeException("Event not found"));
-
-    event.setStatus(status);
-    eventRepo.save(event);
-}
-
 }

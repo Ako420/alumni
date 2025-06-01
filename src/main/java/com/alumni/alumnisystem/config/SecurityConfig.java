@@ -21,10 +21,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.disable()) // Modern way to disable CSRF
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()  // public
-                .anyRequest().authenticated()                // all others protected
+                .requestMatchers("/api/admin/**").hasRole("admin")
+                .requestMatchers("/api/user/**").hasRole("alumni")
+                .requestMatchers("/api/auth/**").permitAll()
+                .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

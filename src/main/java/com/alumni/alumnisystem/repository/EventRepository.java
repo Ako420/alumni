@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByStatus(EventStatus status);
+    long countByStatus(com.alumni.alumnisystem.model.EventStatus status);
+
 }
