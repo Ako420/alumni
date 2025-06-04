@@ -96,7 +96,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
                       <Link href={item.url}>
-                        {item.icon()}
+                        {item.icon ? <item.icon /> : null}
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>

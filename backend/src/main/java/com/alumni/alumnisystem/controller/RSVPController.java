@@ -18,18 +18,18 @@ public class RSVPController {
 
     private final RSVPService rsvpService;
 
-    @PostMapping("/{id}/rsvp")
-    public String rsvpToEvent(@PathVariable Long id,
-                              @RequestBody RSVPRequest request,
-                              @AuthenticationPrincipal UserDetails userDetails) {
-        rsvpService.rsvpToEvent(id, request, userDetails);
-        return "RSVP updated successfully";
-    }
-   @GetMapping("/{id}/rsvps")
-public List<RSVPResponse> viewEventRsvps(@PathVariable Long id,
-                                         @AuthenticationPrincipal UserDetails userDetails) {
-    return rsvpService.getEventRsvps(id, userDetails);
-}
+//     @PostMapping("/{id}/rsvp")
+//     public String rsvpToEvent(@PathVariable Long id,
+//                               @RequestBody RSVPRequest request,
+//                               @AuthenticationPrincipal UserDetails userDetails) {
+//         rsvpService.rsvpToEvent(id, request, userDetails);
+//         return "RSVP updated successfully";
+//     }
+//    @GetMapping("/{id}/rsvps")
+// public List<RSVPResponse> viewEventRsvps(@PathVariable Long id,
+//                                          @AuthenticationPrincipal UserDetails userDetails) {
+//     return rsvpService.getEventRsvps(id, userDetails);
+// }
 
 
 }

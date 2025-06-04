@@ -32,6 +32,7 @@ public class AuthService {
 
         // Create user (enabled immediately)
         User user = User.builder()
+                .Username(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(selectedRole)
@@ -58,7 +59,8 @@ public class AuthService {
 
         // Generate token
         String token = jwtUtil.generateToken(user.getEmail());
-        return new AuthResponse(token);
+        User userDto = mapToUserDto(user);
+        return new AuthResponse(userDto, token);
     }
 
     //  LOGIN
@@ -74,6 +76,15 @@ public class AuthService {
         );
 
         String token = jwtUtil.generateToken(user.getEmail());
-        return new AuthResponse(token);
+        User userDto = mapToUserDto(user);
+        return new AuthResponse(userDto,token);
+    }
+
+    private User mapToUserDto(User user) {
+        User dto = new User();
+        dto.setId(user.getId());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole());
+        return dto;
     }
 }
