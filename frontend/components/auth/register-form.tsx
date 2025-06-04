@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { GraduationCap, Mail, Lock, User, Eye, EyeOff } from "lucide-react"
-import Link from "next/link"npm uninstall date-fns
+import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
 
 export default function RegisterForm() {
