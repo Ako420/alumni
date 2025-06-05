@@ -103,7 +103,7 @@ export default function RegisterForm() {
               <div className="space-y-2">
                 <Label htmlFor="role">Account Type</Label>
                 <Select value={formData.role} onValueChange={(value) => handleChange("role", value)}>
-                  <SelectTrigger id="role">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select account type" />
                   </SelectTrigger>
                   <SelectContent>

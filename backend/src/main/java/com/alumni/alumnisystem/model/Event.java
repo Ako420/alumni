@@ -35,7 +35,6 @@ public class Event {
     @Column(name = "max_attendees")
     private Integer maxAttendees;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
     private EventStatus status = EventStatus.pending;
 
@@ -43,11 +42,9 @@ public class Event {
     @JoinColumn(name = "created_by")
     private User createdBy;
 
-    @Builder.Default
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Builder.Default
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 }

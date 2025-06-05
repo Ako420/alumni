@@ -4,8 +4,12 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
+import com.alumni.alumnisystem.model.User;
+
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
@@ -13,9 +17,22 @@ public class JwtUtil {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // secure random key
     private final long expiration = 3600000; // 1 hour
 
-    public String generateToken(String subject) {
+    // public String generateToken(String subject) {
+    //     return Jwts.builder()
+    //             .setSubject(subject)
+    //             .setIssuedAt(new Date())
+    //             .setExpiration(new Date(System.currentTimeMillis() + expiration))
+    //             .signWith(key)
+    //             .compact();
+    // }
+
+    // Add this overloaded method
+    public String generateToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", user.getRole().name());
         return Jwts.builder()
-                .setSubject(subject)
+                .setClaims(claims)
+                .setSubject(user.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key)

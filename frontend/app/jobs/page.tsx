@@ -24,8 +24,20 @@ import { jobService } from "@/services/auth-service"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 
+interface Job {
+  id: number
+  title: string
+  description: string
+  company: string
+  location: string
+  salary: string
+  type: string
+  postedBy: string
+  postedDate: string
+}
+
 export default function JobsPage() {
-  const [jobs, setJobs] = useState([])
+  const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [filterType, setFilterType] = useState("all")
@@ -52,8 +64,42 @@ export default function JobsPage() {
       setJobs(data)
     } catch (error) {
       console.error("Failed to fetch jobs:", error)
-      // Do NOT set mock jobs here
-      setJobs([]) // Optionally clear jobs on error
+      // Mock data for demo
+      setJobs([
+        {
+          id: 1,
+          title: "Frontend Developer",
+          description: "Vue/React needed for exciting startup",
+          company: "TechSoft",
+          location: "Douala",
+          salary: "400,000 XAF",
+          type: "full-time",
+          postedBy: "John Alumni",
+          postedDate: "2024-01-15",
+        },
+        {
+          id: 2,
+          title: "Marketing Manager",
+          description: "Lead marketing campaigns for growing company",
+          company: "Creative Agency",
+          location: "Yaoundé",
+          salary: "500,000 XAF",
+          type: "full-time",
+          postedBy: "Sarah Graduate",
+          postedDate: "2024-01-14",
+        },
+        {
+          id: 3,
+          title: "Data Analyst",
+          description: "Analyze business data and create insights",
+          company: "DataCorp",
+          location: "Remote",
+          salary: "350,000 XAF",
+          type: "remote",
+          postedBy: "Mike Alumni",
+          postedDate: "2024-01-13",
+        },
+      ])
     } finally {
       setLoading(false)
     }
@@ -102,7 +148,7 @@ export default function JobsPage() {
     }
   }
 
-  const filteredJobs = jobs.filter((job: any) => {
+  const filteredJobs = jobs.filter((job: Job) => {
     const matchesSearch =
       job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -275,39 +321,40 @@ export default function JobsPage() {
           </div>
         ) : filteredJobs.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredJobs.map((job: any) => (
+            {filteredJobs.map((job: Job) => (
               <Card key={job.id} className="group hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <Badge variant="secondary" className="mb-2">
-                      {(job.title || "Untitled").replace("-", " ").toUpperCase()}
+                      {(job.type ?? "Unknown").replace("-", " ").toUpperCase()}
                     </Badge>
                     <Badge variant="outline" className="text-xs">
-                      {job.postedDate || ""}
+                      {job.postedDate}
                     </Badge>
                   </div>
-                  <CardTitle className="group-hover:text-primary transition-colors">{job.title || "Untitled"}</CardTitle>
-                  <CardDescription className="line-clamp-2">{job.description || ""}</CardDescription>
+                  <CardTitle className="group-hover:text-primary transition-colors">{job.title}</CardTitle>
+                  <CardDescription className="line-clamp-2">{job.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Building className="h-4 w-4" />
-                      <span>{job.company || "Unknown"}</span>
+                      <span>{job.company}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <MapPin className="h-4 w-4" />
-                      <span>{job.location || "Unknown"}</span>
+                      <span>{job.location}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <DollarSign className="h-4 w-4" />
-                      <span>{job.salary || "N/A"}</span>
+                      <span>{job.salary}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Clock className="h-4 w-4" />
-                      <span>Posted by {job.postedBy || "Unknown"}</span>
+                      <span>Posted by {job.postedBy}</span>
                     </div>
                   </div>
+
                   <div className="flex gap-2 mt-6">
                     <Button onClick={() => handleApplyToJob(job.id)} className="flex-1">
                       Apply Now

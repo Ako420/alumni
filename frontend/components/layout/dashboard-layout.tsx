@@ -1,8 +1,6 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -40,32 +38,36 @@ import {
   LogOut,
   User,
   Shield,
+  Globe,
 } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
+import { useLanguage } from "@/contexts/language-context"
 import NotificationCenter from "@/components/notifications/notification-center"
-
-const menuItems = {
-  alumni: [
-    { title: "Dashboard", url: "/dashboard", icon: Home },
-    { title: "Events", url: "/events", icon: Calendar },
-    { title: "Job Board", url: "/jobs", icon: Briefcase },
-    { title: "Groups", url: "/groups", icon: MessageCircle },
-    { title: "Alumni Directory", url: "/directory", icon: Users },
-  ],
-  admin: [
-    { title: "Dashboard", url: "/dashboard", icon: Home },
-    { title: "Event Management", url: "/admin/events", icon: Calendar },
-    { title: "User Management", url: "/admin/users", icon: Users },
-    { title: "Job Approvals", url: "/admin/jobs", icon: Briefcase },
-    { title: "Groups", url: "/groups", icon: MessageCircle },
-    { title: "System Settings", url: "/admin/settings", icon: Settings },
-  ],
-}
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, logout, hasRole } = useAuth()
-  const [notifications] = useState(3) // Mock notification count
+  const { language, setLanguage, t } = useLanguage()
+
+  const menuItems = {
+    alumni: [
+      { title: t("nav.dashboard"), url: "/dashboard", icon: Home },
+      { title: t("nav.events"), url: "/events", icon: Calendar },
+      { title: t("nav.jobs"), url: "/jobs", icon: Briefcase },
+      { title: t("nav.groups"), url: "/groups", icon: MessageCircle },
+      { title: t("nav.directory"), url: "/directory", icon: Users },
+      { title: t("nav.profile"), url: "/profile", icon: User },
+      { title: t("nav.settings"), url: "/settings", icon: Settings },
+    ],
+    admin: [
+      { title: t("nav.dashboard"), url: "/dashboard", icon: Home },
+      { title: "Event Management", url: "/admin/events", icon: Calendar },
+      { title: "User Management", url: "/admin/users", icon: Users },
+      { title: "Job Management", url: "/admin/jobs", icon: Briefcase },
+      { title: "Announcements", url: "/admin/announcements", icon: MessageCircle },
+      { title: "Admin Profile", url: "/admin/profile", icon: Settings },
+    ],
+  }
 
   const currentMenuItems = hasRole("admin") ? menuItems.admin : menuItems.alumni
 
@@ -80,7 +82,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {hasRole("admin") && (
                 <Badge variant="destructive" className="text-xs w-fit">
                   <Shield className="h-3 w-3 mr-1" />
-                  Admin
+                  {t("common.admin")}
                 </Badge>
               )}
             </div>
@@ -96,7 +98,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
                       <Link href={item.url}>
-                        {item.icon ? <item.icon /> : null}
+                        <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -126,13 +128,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile">
+                      <User className="mr-2 h-4 w-4" />
+                      {t("nav.profile")}
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings">
+                      <Settings className="mr-2 h-4 w-4" />
+                      {t("nav.settings")}
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout} className="text-red-600">
@@ -154,6 +160,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Language Switcher */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <Globe className="h-4 w-4 mr-2" />
+                  {language === "en" ? "EN" : "FR"}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setLanguage("en")}>English</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage("fr")}>Français</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <NotificationCenter />
 
             <DropdownMenu>
@@ -173,13 +193,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  Profile
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">
+                    <User className="mr-2 h-4 w-4" />
+                    {t("nav.profile")}
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
+                <DropdownMenuItem asChild>
+                  <Link href="/settings">
+                    <Settings className="mr-2 h-4 w-4" />
+                    {t("nav.settings")}
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout} className="text-red-600">

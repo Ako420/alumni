@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.Customizer;
 
 import org.springframework.context.annotation.*;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,7 +36,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").hasRole("admin")
                 .requestMatchers("/api/user/**").hasRole("alumni")
                 .requestMatchers("/api/auth/**").permitAll()
-                //.requestMatchers("/api/events").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll() // or hasRole("USER") etc.
+                .requestMatchers("/api/events").authenticated()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -56,15 +58,16 @@ public class SecurityConfig {
     }
     
     @Bean
-    public CorsFilter corsFilter() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:3000")); 
+        config.setAllowedOrigins(List.of("http://localhost:3000", "http://127.0.0.1:3000"));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+        return source;
     }
 }

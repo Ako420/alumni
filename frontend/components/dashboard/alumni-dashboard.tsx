@@ -12,15 +12,7 @@ import { jobService } from "@/services/auth-service"
 export default function AlumniDashboard() {
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
-  type Job = {
-    id: number
-    title: string
-    company: string
-    location: string
-    type: string
-    postedBy: string
-  }
-  const [jobs, setJobs] = useState<Job[]>([])
+  const [jobs, setJobs] = useState([])
 
   useEffect(() => {
     fetchEvents()

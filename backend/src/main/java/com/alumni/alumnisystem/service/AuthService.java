@@ -58,7 +58,7 @@ public class AuthService {
         }
 
         // Generate token
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user);
         User userDto = mapToUserDto(user);
         return new AuthResponse(userDto, token);
     }
@@ -75,7 +75,7 @@ public class AuthService {
                 )
         );
 
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user);
         User userDto = mapToUserDto(user);
         return new AuthResponse(userDto,token);
     }
